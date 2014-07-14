@@ -12,9 +12,6 @@ class ZoomText(tk.Text):
         self.container.pack(fill="both", expand=True)
 
         tk.Text.__init__(self, self.container)
-        name = self['font'];
-        self.font = tkFont.nametofont(name)
-        self.size = 9
 
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
@@ -31,8 +28,15 @@ class ZoomText(tk.Text):
 
     def resize(self, d=1):
         self.container.grid_propagate(False)
-        s = abs(self.font["size"]); #print(s)
-        self.font.config(size=max(s+2*d, 8))
+        font_names = [ self.tag_cget(t, "font") for t in self.tag_names() ]
+        font_names.append(self['font'])
+        for name in set(font_names):
+            try:
+                font = tkFont.nametofont(name)
+                s = abs(font["size"]); #print(s)
+                font.config(size=max(s+2*d, 8))
+            except:
+                continue
 
 if __name__ == "__main__":
     root = tk.Tk()
